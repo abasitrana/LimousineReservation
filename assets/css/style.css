@@ -8,16 +8,10 @@
   --sh-2: 0px 0px 20px 10px #3b3b3b1c;
 }
 
-::selection {background: #050607; color: #FFFFFF; text-shadow: none;}
-/*::-webkit-scrollbar {width:10px;background-color: #F5F5F5;}
-::-webkit-scrollbar-button:start:decrement, ::-webkit-scrollbar-button:end:increment {display:none;}
-::-webkit-scrollbar-track-piece {background-color: #dedede;}
-::-webkit-scrollbar-thumb:vertical {background-color: #03132b;}*/
-
 [class^="box-"] {display:none}
 [class^="box-"].showfirst {display:block}
 
-body {font-family: 'KoHo', sans-serif;}
+body {font-family: 'KoHo', sans-serif;background-color: #F1F1F1;}
 h1,
 h2,
 h3,
@@ -108,6 +102,8 @@ ul.dropdown li a:hover {color: rgba(0,0,0,0.5) !important;}
 
 /* General CSS  */
 
+.element {position: absolute;}
+
 ul.inline-block li {display: inline-block;margin-right: 15px;}
 ul.inline-block li:last-child {margin-right: 0;}
 
@@ -129,11 +125,17 @@ ul.inline-block li:last-child {margin-right: 0;}
 
 .headingstyle1 {margin-bottom: 30px;}
 .headingstyle1 h3 {font-size: 36px;font-weight: 600;margin-bottom: 21px;text-transform: uppercase;}
+.headingstyle1 h6 {color: #999;font-weight: 700;font-size: 16px;text-transform: uppercase;letter-spacing: 12.32px;}
 .headingstyle1 p {}
 
 .custom-input-style {width: 100%;border: 1px solid var(--primary-color);height: 40px;padding: 0 15px;font-size: 14px;}
 .custom-textarea-style {width: 100%;border: 1px solid var(--primary-color);padding: 15px 15px;font-size: 14px;resize: none;}
 .custom-submit-style {width: 100%;background-color: var(--primary-color);color: #ffffff;padding: 15px 0;text-transform: uppercase;border: none;}
+
+.testimonial-box {position: relative;background-color: #F1F1F1;border: 1px solid #dbdbdb;padding: 20px 20px;}
+.testimonial-box span i {
+    color: yellow;
+}
 
 header {padding: 0 0 0 50px;}
 .site-navigation {text-align: right;}
@@ -154,6 +156,13 @@ footer .social-icons {text-align: right;}
 footer .social-icons ul li a {color: #ffffff;font-size: 20px;}
 
 .contact-form {background-color: #FFFFFF;padding: 30px 45px;}
+
+.app-elements .element-1 {left: -150px;bottom: -200px;}
+.app-elements .element-2 {right: 0;top: -130px;}
+.apps-detail {background-color: #000000;padding: 9rem 25rem 9rem 15rem;}
+.apps-detail h3 {color: var(--primary-color);font-size: 40px;margin-bottom: 25px;}
+.apps-detail p {color: #CECECE;margin-bottom: 35px;}
+
 
 @media (max-width: 1199px) {
 
