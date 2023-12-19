@@ -125,7 +125,7 @@ ul.inline-block li:last-child {margin-right: 0;}
 
 
 .headingstyle1 {margin-bottom: 30px;}
-.headingstyle1 h3 {font-size: 36px;font-weight: 600;margin-bottom: 21px;text-transform: uppercase;}
+.headingstyle1 h3 {font-size: 36px;font-weight: 700;margin-bottom: 21px;text-transform: uppercase;}
 .headingstyle1 h6 {color: #999;font-weight: 700;font-size: 16px;text-transform: uppercase;letter-spacing: 12.32px;}
 .headingstyle1 p {}
 
@@ -165,6 +165,16 @@ footer .social-icons ul li a {color: #ffffff;font-size: 20px;}
 .apps-detail {background-color: #000000;padding: 9rem 25rem 9rem 15rem;}
 .apps-detail h3 {color: var(--primary-color);font-size: 40px;margin-bottom: 25px;}
 .apps-detail p {color: #CECECE;margin-bottom: 35px;}
+
+.wwr-element {position: relative;min-height: 1043px;display: flex;align-items: center;}
+.wwr-element::before {content: '';position: absolute;left: 0;top: 0;background: url(../images/mix/who-we-are.png);width: 867px;height: 1043px;}
+.wwr-element .headingstyle1 {padding: 50px 100px 50px 0;}
+
+.wwd .headingstyle1 {margin-bottom: 70px;}
+.boxstyle-1 {position: relative;text-align: center;display: flex;flex-flow: column;justify-content: center;align-items: center;padding: 0 35px 25px;}
+.boxstyle-1::before {content: '';background: url(../images/mix/dots.png) no-repeat;position: absolute;width: 42px;height: 8px;bottom: 0;}
+.boxstyle-1 span {width: 134px;height: 134px;display: flex;align-items: center;justify-content: center;background: linear-gradient(223deg, #E4E4E4 3.59%, #E4E4E4 100%);margin-bottom: 25px;}
+.boxstyle-1 h4 {font-size: 24px;text-transform: uppercase;margin-bottom: 20px;}
 
 
 @media (max-width: 1199px) {
