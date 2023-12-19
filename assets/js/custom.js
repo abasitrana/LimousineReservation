@@ -41,6 +41,9 @@ $(document).ready(function () {
         closePopup();
     });
 
+    $("#datepicker1" ).datepicker();
+    $('#timepicker1').timepicker({});
+
     
     $('.testimonial-slider').slick({
         dots: false,
