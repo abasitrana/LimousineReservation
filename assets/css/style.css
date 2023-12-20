@@ -194,6 +194,20 @@ footer .social-icons ul li a {color: #ffffff;font-size: 20px;}
 .search-form .amount > div {color: #FFFFFF;display: block;text-transform: uppercase;}
 .search-form .amount .calculated-amount {font-size: 58px;font-weight: 700;line-height: normal;}
 
+.banner-home {position: relative;overflow: hidden;}
+
+.h-banner-category {position: absolute;right: 0;top: 0;}
+.hc-slide-box {position: relative;display: flex;align-items: center;justify-content: center;gap: 0.5rem;width: 340px;background: #424242;padding: 45px 20px 45px 10px;border-top: 3px solid #000000;border-bottom: 1px solid #000000;}
+.hc-slide-box .text-box h3 {color: #FFFFFF;font-size: 20px;font-weight: 600;text-transform: uppercase;}
+.hc-slide-box .text-box ul {display: flex;align-items: center;justify-content: space-between;}
+.hc-slide-box .text-box ul li i {color: #FFFFFF;}
+.hc-slide-box .text-box ul li span {color: #FFFFFF;font-size: 14px;font-weight: 600;}
+
+.hm-slider-box {position: relative;}
+.hm-slider-box .text-box {display: flex;align-items: self-start;gap: 2rem;}
+.hm-slider-box .text-box h3 {font-size: 110px;font-weight: 400;text-transform: uppercase;}
+.hm-slider-box .text-box p {color: #999;margin: 45px 0 0 0;}
+
 @media (max-width: 1199px) {
 
   .hamburger {display: block;top: 0}
