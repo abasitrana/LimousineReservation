@@ -255,6 +255,11 @@ input#cb-switch {display: none;}
 .contact-styling .mb {margin-bottom: 100px;}
 .g-map iframe {width: 100%;height: 600px;border: none;}
 
+.services-list {background-color: #FFFFFF;}
+.services-list .row > .col-lg-6{padding: 0;}
+.services-list .img-box img {width: 100%;}
+.services-list .text-box {padding: 0 270px 0 120px;}
+
 
 @media (max-width: 1199px) {
 
