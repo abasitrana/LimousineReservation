@@ -108,7 +108,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
 
 
     //Zonal Management
-    Route::get('zone', 'App\Http\Controllers\ZonalController@getZones');
+    Route::get('zone', 'App\Http\Controllers\ZonalController@getZones')->name('admin.zones');
     Route::get('zonesdata', 'App\Http\Controllers\ZonalController@getzonesData');
     Route::get('addzone', 'App\Http\Controllers\ZonalController@create');
     Route::post('addzone', 'App\Http\Controllers\ZonalController@store')->name('admin.zones.addzone');
@@ -120,7 +120,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
 
 
     //Fare Management
-    Route::get('fare', 'App\Http\Controllers\FareController@getfares');
+    Route::get('fare', 'App\Http\Controllers\FareController@getfares')->name('admin.fares');
     Route::get('faresdata', 'App\Http\Controllers\FareController@getfaresData');
     Route::get('addfare', 'App\Http\Controllers\FareController@create');
     Route::post('addfare', 'App\Http\Controllers\FareController@store')->name('admin.fares.addfare');

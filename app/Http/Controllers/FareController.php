@@ -79,7 +79,7 @@ class FareController extends Controller
             'fare' => $request['fare']
         ]);
 
-        return back()->with('success', 'Fare added successfully');
+        return redirect()->route('admin.fares')->with('success', 'Fare added successfully');
     }
 
 
@@ -123,7 +123,7 @@ class FareController extends Controller
             'fare' => $request['fare']
         ]);
 
-        return back()->with('success', 'Fare updated successfully.');
+        return redirect()->route('admin.fares')->with('success', 'Fare updated successfully.');
     }
 
     /**

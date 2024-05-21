@@ -86,7 +86,7 @@ class ZonalController extends Controller
 
         ]);
 
-        return to_route('admin.zones.addzone')->with('success', 'Zone added successfully.');
+        return redirect()->route('admin.zones')->with('success', 'Zone added successfully.');
     }
 
     /**
@@ -130,7 +130,7 @@ class ZonalController extends Controller
             'postal' => $request->postal,
         ]);
 
-        return back()->with('success', 'Zone updated successfully.');
+        return redirect()->route('admin.zones')->with('success', 'Zone updated successfully.');
     }
 
     /**

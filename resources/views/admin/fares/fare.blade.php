@@ -49,11 +49,24 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="tab-content">
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul>
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>
+                                                            {{ $error }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
                                         @if (session('success'))
                                             <div class="alert alert-success">
                                                 {{ session('success') }}
                                             </div>
                                         @endif
+
 
                                         <div class="tab-pane fade show active" id="tabs-eg-77">
                                             <table id="datatable">
