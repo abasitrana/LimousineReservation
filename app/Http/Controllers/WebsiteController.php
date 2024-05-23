@@ -26,8 +26,9 @@ class WebsiteController extends Controller
 
         $zones = Zonal::all();
         $cars = Car::with('car_pictures')->get();
+        $HourlyPackage = HourlyPackage::get();
         // dd($cars[0]);
-        return view('index', ['cars' => $cars, 'zones' => $zones]);
+        return view('index', ['cars' => $cars, 'zones' => $zones, 'HourlyPackage' => $HourlyPackage]);
     }
 
 
@@ -126,8 +127,10 @@ class WebsiteController extends Controller
         }
         $zones = Zonal::all();
         $bookingData = session('bookingData');
-        $cars = Car::get();
-        $HourlyPackage = HourlyPackage::get();
+
+        // dd($bookingData);
+        $cars = Car::where('max_capacity', '>=', $bookingData['max_persons'])->where('max_luggage', '>=', $bookingData['max_luggage'])->get();
+        $HourlyPackage = HourlyPackage::where('id', $bookingData['hourly_package_id'])->first();
 
         // dd($HourlyPackage);
         return view('booking', ['bookingData' => $bookingData, 'cars' => $cars, 'HourlyPackage' => $HourlyPackage, 'zones' => $zones]);
@@ -162,19 +165,19 @@ class WebsiteController extends Controller
 
     public function bookingSession(Request $request)
     {
-
         $data = $request->all();
-
         session(['bookingData' => $data]);
-
         return to_route('booking');
     }
 
     public function createBooking(Request $request)
     {
-
+        dd($request->car);
+        if (!$request->car) {
+            return redirect()->route('booking')->with(['error' => 'No car Selected']);
+        }
         try {
-            $car = Car::where('id', $request->car_id)->where('max_capacity', $request->person_count)->where('max_luggage', $request->luggage_count)->first();
+            $car = Car::where('id', $request->car)->where('max_capacity', $request->person_count)->where('max_luggage', $request->luggage_count)->first();
             if (!$car) {
                 return redirect('booking', 404)->back()->with(['error' => 'No car found']);
             }
@@ -188,7 +191,7 @@ class WebsiteController extends Controller
                     $bookingData = session('bookingData');
 
                     $booking = new Booking();
-                    $booking->car_id = $request->car_id;
+                    $booking->car_id = $request->car;
                     $booking->fare_id = $request->fare_id;
                     $booking->datepicker = $request->datepicker;
                     $booking->timepicker = $request->timepicker;
@@ -208,7 +211,7 @@ class WebsiteController extends Controller
                     $bookingResult = $booking->save();
                 } else {
                     $booking = new Booking();
-                    $booking->car_id = $request->car_id;
+                    $booking->car_id = $request->car;
                     $booking->fare_id = $request->fare_id;
                     $booking->datepicker = $request->datepicker;
                     $booking->timepicker = $request->timepicker;

@@ -145,16 +145,30 @@
 
 
                     <div class="row">
-                        <div class="col-lg-12">
+                        {{-- <div class="col-lg-12">
                             <div class="c-form-group s2">
-                                {{-- <span class="left-align">From</span> --}}
-                                {{-- <input name="pickup_address" type="text" class="input-style" placeholder="Enter Full Pick-Up Address & Select From Autocomplete" /> --}}
 
                                 <select name="route_type" class="input-style" id="route_type">
                                     <option value="1" selected>Round Trip</option>
                                     <option value="2">Location</option>
                                 </select>
                                 <span class="right-align">Route Type</span>
+
+                            </div>
+                        </div> --}}
+                        <div class="col-lg-12">
+                            <div class="c-form-group s2">
+                                <i class="fas fa-clock"></i>
+                                <select class="input-style" name="hourly_package_id" required="" id="hourly-price">
+                                    {{-- <option selected disabled>Select Hourly Price</option> --}}
+                                    @foreach ($HourlyPackage as $key => $hpkg)
+                                        <option {{ $loop->iteration == 1 ? 'selected' : '' }}
+                                            value="{{ $hpkg->id }}" data-hourly-price="{{ $hpkg->hourly_rate }}">
+                                            {{ $hpkg->package_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
 
                             </div>
                         </div>
@@ -619,120 +633,120 @@
 
         });
 
-        function initMap() {
-            let routes = [];
+        // function initMap() {
+        //     let routes = [];
 
-            const allowedPostalCodes = [];
-            const startLoc = document.getElementById("zone_from");
-            const endLoc = document.getElementById("zone_to");
-            const options = {
-                fields: [
-                    "formatted_address",
-                    "geometry",
-                    "name",
-                    "address_components",
-                ],
-                strictBounds: false,
-                componentRestrictions: {
-                    country: "us",
-                    postalCode: allowedPostalCodes,
-                },
-            };
+        //     const allowedPostalCodes = [];
+        //     const startLoc = document.getElementById("zone_from");
+        //     const endLoc = document.getElementById("zone_to");
+        //     const options = {
+        //         fields: [
+        //             "formatted_address",
+        //             "geometry",
+        //             "name",
+        //             "address_components",
+        //         ],
+        //         strictBounds: false,
+        //         componentRestrictions: {
+        //             country: "us",
+        //             postalCode: allowedPostalCodes,
+        //         },
+        //     };
 
-            const startLocAutocomplete =
-                new google.maps.places.Autocomplete(startLoc, options);
-            const endLocAutocomplete = new google.maps.places.Autocomplete(
-                endLoc,
-                options
-            );
+        //     const startLocAutocomplete =
+        //         new google.maps.places.Autocomplete(startLoc, options);
+        //     const endLocAutocomplete = new google.maps.places.Autocomplete(
+        //         endLoc,
+        //         options
+        //     );
 
-            startLocAutocomplete.addListener("place_changed", () => {
-                const startPlace = startLocAutocomplete.getPlace();
+        //     startLocAutocomplete.addListener("place_changed", () => {
+        //         const startPlace = startLocAutocomplete.getPlace();
 
-                if (!startPlace.geometry || !startPlace.geometry.location) {
-                    window.alert(
-                        "We do not provide zonal services in this area. Please enter a location within the following postal codes: " +
-                        allowedPostalCodes.join(", ") +
-                        " or use route type location"
-                    );
-                    return;
-                }
+        //         if (!startPlace.geometry || !startPlace.geometry.location) {
+        //             window.alert(
+        //                 "We do not provide zonal services in this area. Please enter a location within the following postal codes: " +
+        //                 allowedPostalCodes.join(", ") +
+        //                 " or use route type location"
+        //             );
+        //             return;
+        //         }
 
-                const startZipCode = extractZipCode(
-                    startPlace.address_components
-                );
-                console.log(startZipCode)
-                let endZipCode;
-                endLocAutocomplete.addListener("place_changed", () => {
-                    const endPlace = endLocAutocomplete.getPlace();
+        //         const startZipCode = extractZipCode(
+        //             startPlace.address_components
+        //         );
+        //         console.log(startZipCode)
+        //         let endZipCode;
+        //         endLocAutocomplete.addListener("place_changed", () => {
+        //             const endPlace = endLocAutocomplete.getPlace();
 
-                    if (!endPlace.geometry || !endPlace.geometry.location) {
-                        window.alert(
-                            "We do not provide zonal services in this area. Please enter a location within the following postal codes: " +
-                            allowedPostalCodes.join(", ") +
-                            " or use route type location"
-                        );
-                        return;
-                    }
+        //             if (!endPlace.geometry || !endPlace.geometry.location) {
+        //                 window.alert(
+        //                     "We do not provide zonal services in this area. Please enter a location within the following postal codes: " +
+        //                     allowedPostalCodes.join(", ") +
+        //                     " or use route type location"
+        //                 );
+        //                 return;
+        //             }
 
-                    endZipCode = extractZipCode(
-                        endPlace.address_components
-                    );
-                    console.log(endZipCode)
-                    const isValidRoute = validateRoute(
-                        startZipCode,
-                        endZipCode,
-                        routes
-                    );
+        //             endZipCode = extractZipCode(
+        //                 endPlace.address_components
+        //             );
+        //             console.log(endZipCode)
+        //             const isValidRoute = validateRoute(
+        //                 startZipCode,
+        //                 endZipCode,
+        //                 routes
+        //             );
 
-                    if (isValidRoute) {
-                        console.log("Valid route!");
-                    } else {
-                        let validRoutesString = "Valid routes:\n";
-                        for (const route of routes) {
-                            validRoutesString += `  * ${route.from} to ${route.to}\n`;
-                        }
-                        alert(
-                            validRoutesString +
-                            "Please choose from the listed routes zipcodes."
-                        );
-                    }
-                });
-                // Handle missing end location
-                if (!endZipCode) {
-                    // Re-validate route after a start location change
-                    validateRoute(startZipCode, endZipCode, routes); // Use stored endZipCode
-                }
-            });
-        }
+        //             if (isValidRoute) {
+        //                 console.log("Valid route!");
+        //             } else {
+        //                 let validRoutesString = "Valid routes:\n";
+        //                 for (const route of routes) {
+        //                     validRoutesString += `  * ${route.from} to ${route.to}\n`;
+        //                 }
+        //                 alert(
+        //                     validRoutesString +
+        //                     "Please choose from the listed routes zipcodes."
+        //                 );
+        //             }
+        //         });
+        //         // Handle missing end location
+        //         if (!endZipCode) {
+        //             // Re-validate route after a start location change
+        //             validateRoute(startZipCode, endZipCode, routes); // Use stored endZipCode
+        //         }
+        //     });
+        // }
 
-        function extractZipCode(addressComponents) {
-            const addressZipCodeData = addressComponents.find((component) =>
-                component.types.includes("postal_code")
-            );
-            if (addressZipCodeData) {
-                return addressZipCodeData.long_name;
-            } else {
-                window.alert(
-                    "Zipcode for the following location does not exist!"
-                );
-            }
-        }
+        // function extractZipCode(addressComponents) {
+        //     const addressZipCodeData = addressComponents.find((component) =>
+        //         component.types.includes("postal_code")
+        //     );
+        //     if (addressZipCodeData) {
+        //         return addressZipCodeData.long_name;
+        //     } else {
+        //         window.alert(
+        //             "Zipcode for the following location does not exist!"
+        //         );
+        //     }
+        // }
 
-        function validateRoute(startZipCode, endZipCode, routes) {
-            const startLoc = document.getElementById("zone_from");
-            const endLoc = document.getElementById("zone_to");
-            console.log(startLoc.value, endLoc.value);
-            if (!routes.length) {
-                return true;
-            }
-            return routes.some(
-                (route) =>
-                route.from === startZipCode && route.to === endZipCode
-            );
-        }
+        // function validateRoute(startZipCode, endZipCode, routes) {
+        //     const startLoc = document.getElementById("zone_from");
+        //     const endLoc = document.getElementById("zone_to");
+        //     console.log(startLoc.value, endLoc.value);
+        //     if (!routes.length) {
+        //         return true;
+        //     }
+        //     return routes.some(
+        //         (route) =>
+        //         route.from === startZipCode && route.to === endZipCode
+        //     );
+        // }
 
-        window.initMap = initMap;
+        // window.initMap = initMap;
     </script>
 
 

@@ -44,36 +44,43 @@
             </div>
         </div>
     </header>
-
     <form action="{{ route('checkout') }}" method="POST">
         @csrf
         <input type="hidden" id="routeType" name="route_type"
-            value="{{ session('bookingData')['route_type'] ?? '' }}">
-        <input type="hidden" id="carIdInput" name="car_id" value="1">
-        <input type="hidden" id="carPriceInput">
+            value="{{ session('bookingData')['route_type'] ?? '2' }}">
+        <input type="hidden" id="carIdInput" name="car" required>
+        <input type="hidden" id="carPriceInput" required>
         <input type="hidden" id="hourlyPriceInput">
         <input type="hidden" id="hourlySlapPriceInput" name="extraHourlySlapPrice">
         <input type="hidden" id="fromToPrice" value="{{ session('bookingData')['total_fare'] ?? '' }}">
         <input type="hidden" id="fareIdInput" name="fare_id" value="{{ session('bookingData')['fare_id'] ?? '' }}">
         <input type="hidden" id="totalPriceInput" name="total_price">
+        <input type="hidden" id="hourly-price" name='hourly_package_id'
+            data-hourly-price="{{ $HourlyPackage->hourly_rate }}"
+            value="{{ session('bookingData')['hourly_package_id'] ?? '' }}">
         <section class="form-styling spacing__x pb-0">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-12">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                @if (session('error'))
-                                    <div class="alert alert-danger">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
+                        @endif
 
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="row">
                             <div class="col-lg-12"
-                                style=" {{ session('bookingData')['route_type'] == 1 ? '' : 'display:none;' }}">
+                                style=" {{ isset(session('bookingData')['route_type']) == 1 ? '' : 'display:none;' }}">
 
                                 <div class="alert alert-warning">
-                                    For zonal routes, a fixed duration of 7 hours applies.
+                                    For round trip routes, a fixed duration of 7 hours applies.
                                 </div>
                             </div>
                             <div class="col-lg-4">
@@ -95,13 +102,12 @@
                             </div>
 
 
-                            <div class="col-lg-4"
-                                style=" {{ session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
-                                <div class="c-form-group">
+                            {{-- <div class="col-lg-4"
+                                style=" {{ isset(session('bookingData')['route_type']) == 1 ? 'display:none;' : '' }}">
+                                <div class="c-form-group s2">
                                     <i class="fas fa-clock"></i>
                                     <select class="input-style" name="hourly_package_id" required=""
                                         id="hourly-price">
-                                        {{-- <option selected disabled>Select Hourly Price</option> --}}
                                         @foreach ($HourlyPackage as $key => $hpkg)
                                             <option {{ $loop->iteration == 1 ? 'selected' : '' }}
                                                 value="{{ $hpkg->id }}"
@@ -113,7 +119,7 @@
 
 
                                 </div>
-                            </div>
+                            </div> --}}
                             @php
                                 $csrfToken1 = csrf_token();
                             @endphp
@@ -172,7 +178,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-4"
-                                style=" {{ session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
+                                style=" {{ isset(session('bookingData')['route_type']) == 1 ? 'display:none;' : '' }}">
 
 
                                 <div class="input-group counter">
@@ -222,12 +228,13 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="center-mode-slider">
-
+                        {{-- <div class="center-mode-slider"> --}}
+                        <div class="grid"
+                            style="max-height:600px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));grid-template-rows: 250px; grid-auto-rows:250px;gap:8px">
                             @foreach ($cars as $key => $car)
-                                <div class="hc-slide-box" style="height: 100%">
+                                <div class="hc-slide-box w-100">
                                     <div class="img-box" style="flex-grow: 1">
-                                        <img width="230" height="200"
+                                        <img width="200"
                                             src="{{ asset($car->car_pictures->first()?->car_picture_path) }}" />
                                     </div>
                                     <div class="text-box"
@@ -239,7 +246,13 @@
                                             <li><i class="fas fa-suitcase-rolling"></i> <span>Max
                                                     {{ $car->max_luggage }}</span></li>
                                         </ul>
-                                        <ul>
+                                        <ul class="mt-1">
+                                            <li>
+                                                <i class='fas fa-user-friends'></i><span>Base Fare:
+                                                    {{ $car->car_base_fare }}</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="mt-1">
                                             <li>
                                                 <i class='fas fa-user-friends'><span> Extra Hourly Rate: </span><span
                                                         class="extra-hourly-rate"></span></i>
@@ -248,12 +261,20 @@
                                         <a href="javascript:void(0);" class="btn btn-primary btn-sm select-car mt-4"
                                             data-car-id="{{ $car->id }}"
                                             data-car-price="{{ $car->car_base_fare }}">Select Car</a>
+                                        {{-- <div style="display: block">
+                                            <input type="radio"
+                                                class="btn btn-primary form-check-input btn-sm select-car mt-4"
+                                                name='car' value='{{ $car->id }}'
+                                                data-car-id="{{ $car->id }}"
+                                                data-car-price="{{ $car->car_base_fare }}">
+                                            <label class="form-check-label" for="car">Select Car</label>
+                                        </div> --}}
                                     </div>
                                 </div>
                             @endforeach
-
-
                         </div>
+
+                        {{-- </div> --}}
                     </div>
                 </div>
 
@@ -271,25 +292,23 @@
                     </div>
                 </div>
 
-
-
                 <div class="row just@y-content-center">
                     <div class="col-lg-12">
-                        <div class="c-form-group s2">
-                            {{-- <span class="left-align">From</span> --}}
-                            {{-- <input type="text" name="booking_date_from" value="{{ $bookingData ? $bookingData['pickup_address'] : '' }}" class="input-style" placeholder=""> --}}
+                        {{-- <div class="c-form-group s2">
 
                             <select disabled name="route_type" class="input-style" id="route_type">
                                 <option value="1"
-                                    {{ $bookingData && $bookingData['route_type'] == 1 ? 'selected' : '' }}>Zonal
+                                    {{ isset($bookingData) && isset($bookingData['route_type']) == 1 ? 'selected' : '' }}>
+                                    Zonal
                                 </option>
                                 <option value="2"
-                                    {{ $bookingData && $bookingData['route_type'] == 2 ? 'selected' : '' }}>Location
+                                    {{ isset($bookingData) && isset($bookingData['route_type']) == 2 ? 'selected' : '' }}>
+                                    Location
                                 </option>
                             </select>
                             <span class="right-align">Route Type</span>
 
-                        </div>
+                        </div> --}}
 
                         <div class="c-form-group s2">
                             {{-- <span class="left-align">From</span> --}}
@@ -519,7 +538,7 @@
             });
 
             function hourlyPackagePrice() {
-                var pckgId = $("#hourly-price").find(":selected").val();
+                var pckgId = $("#hourly-price").val();
                 var csrfToken1 = $('meta[name="csrf-token"]').attr('content');
                 // console.log(pckgId)
 
@@ -577,7 +596,7 @@
 
 
             function getPriceForCount(count) {
-                var pckgId = $("#hourly-price").find(":selected").val();
+                var pckgId = $("#hourly-price").val();
                 var selectedPrice = 0;
                 var hourlyPriceData = null;
                 var csrfToken1 = $('meta[name="csrf-token"]').attr('content');
@@ -652,7 +671,7 @@
             }
 
             $('#hourly-price').on('change', function() {
-                var hourlyPrice = parseInt($(this).find(':selected').data('hourly-price') || 0);
+                var hourlyPrice = parseInt($(this).val() || 0);
                 $('#hourlyPriceInput').val(hourlyPrice);
                 updateTotalPrice();
             });
@@ -678,7 +697,7 @@
 
             function updateTotalPrice() {
                 var carPrice = parseInt($('#carPriceInput').val() || 0);
-                var hourlyPrice = parseInt($('#hourly-price').find(':selected').data('hourly-price') || 0);
+                var hourlyPrice = parseInt($('#hourly-price').data('hourly-price') || 0);
                 var hoursCount = parseInt($('#hourly-slaps-price').val() || 0);
                 console.log(carPrice, hourlyPrice, hoursCount)
                 console.log(hourlyPackagePriceData)

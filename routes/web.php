@@ -102,9 +102,9 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
 
     //Booking Data
     Route::get('bookingdata', 'App\Http\Controllers\BookingController@getBookingsData');
-    Route::get('bookings', 'App\Http\Controllers\BookingController@booking');
+    Route::get('bookings', 'App\Http\Controllers\BookingController@booking')->name('admin.bookings');
     Route::get('addbookings', 'App\Http\Controllers\BookingController@addbooking');
-    Route::post('addbookings', 'App\Http\Controllers\BookingController@addbookingdata');
+    Route::post('addbookings', 'App\Http\Controllers\BookingController@addbookingdata')->name('admin.submit.booking');
 
 
     //Zonal Management

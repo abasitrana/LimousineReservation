@@ -33,6 +33,60 @@ class BookingController extends Controller
         return view('admin.bookings.addbooking')->with(['cars' => $cars])->with(['hourly_package' => $hourly_package]);
     }
 
+
+    public function addbookingdata(Request $request)
+    {
+        $request->validate([
+            'car_id' => 'required',
+            'hourly_package_id' => 'required',
+            'datepicker' => 'required',
+            'timepicker' => 'required',
+            'start_address' => 'required',
+            'end_address' => 'required',
+            'start_address_zipcode' => 'nullable',
+            'end_address_zipcode' => 'nullable',
+            'start_address_lat' => 'nullable',
+            'start_address_lng' => 'nullable',
+            'end_address_lat' => 'nullable',
+            'end_address_lng' => 'nullable',
+            'route_type' => 'required',
+            'total_price' => 'required',
+            'luggage_count' => 'required',
+            'person_count' => 'required',
+            'session_id' => 'nullable',
+            'status' => 'required',
+            'user_id' => 'nullable',
+        ]);
+        if ($request->route_type == 1) {
+            $fare = Fare::where('zone_from', $request->start_address)->where('zone_to', $request->end_address)->first();
+            if (!$fare) {
+                return redirect()->back()->with(['error' => 'Please select valid start and end address for Round Trip']);
+            }
+        }
+        $booking = new Booking();
+        $booking->car_id = $request->car_id;
+        $booking->hourly_package_id = $request->hourly_package_id;
+        $booking->datepicker = $request->datepicker;
+        $booking->timepicker = $request->timepicker;
+        $booking->start_address = $request->start_address;
+        $booking->end_address = $request->end_address;
+        $booking->start_address_zipcode = $request->start_address_zipcode ?? 12345;
+        $booking->end_address_zipcode = $request->end_address_zipcode ?? 12345;
+        $booking->start_address_lat = $request->start_address_lat ?? 12345;
+        $booking->start_address_lng = $request->start_address_lng ?? 12345;
+        $booking->end_address_lat = $request->end_address_lat ?? 12345;
+        $booking->end_address_lng = $request->end_address_lng ?? 12345;
+        $booking->route_type = $request->route_type;
+        $booking->total_price = $request->total_price;
+        $booking->luggage_count = $request->luggage_count;
+        $booking->person_count = $request->person_count;
+        $booking->session_id = $request->session_id ?? 'test';
+        $booking->status = $request->status;
+        $booking->user_id = $request->user_id;
+        $booking->save();
+        return redirect()->route('admin.bookings')->with(['success' => 'Booking Added Successfully']);
+    }
+
     public function createBooking(Request $request)
     {
 
@@ -94,10 +148,13 @@ class BookingController extends Controller
     public function checkout(Request $request)
     {
 
+        $request->validate([
+            'car' => 'required',
+        ]);
         try {
 
             $session_url = DB::transaction(function () use ($request) {
-                $car = Car::where('id', $request->car_id)->where('max_capacity', '>=', $request->person_count)->where('max_luggage', '>=', $request->luggage_count)->first();
+                $car = Car::where('id', $request->car)->where('max_capacity', '>=', $request->person_count)->where('max_luggage', '>=', $request->luggage_count)->first();
 
                 if (!$car) {
                     return redirect()->back()->with(['error' => 'No suitable car found matching your requirements. Please adjust your criteria and try again.']);
@@ -113,7 +170,7 @@ class BookingController extends Controller
 
 
                     $booking = new Booking();
-                    $booking->car_id = $request->car_id;
+                    $booking->car_id = $request->car;
                     $booking->fare_id = $request->fare_id;
                     $booking->datepicker = $request->datepicker;
                     $booking->timepicker = $request->timepicker;
@@ -134,7 +191,7 @@ class BookingController extends Controller
                     $total_price += $car->car_base_fare + $hourlyPackage->hourly_rate + $request->extraHourlySlapPrice;
 
                     $booking = new Booking();
-                    $booking->car_id = $request->car_id;
+                    $booking->car_id = $request->car;
                     $booking->fare_id = $request->fare_id;
                     $booking->datepicker = $request->datepicker;
                     $booking->timepicker = $request->timepicker;
