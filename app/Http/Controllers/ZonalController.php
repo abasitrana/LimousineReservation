@@ -21,6 +21,12 @@ class ZonalController extends Controller
         return view('admin.zones.zone');
     }
 
+    public function getZonesApi()
+    {
+        $zones = Zonal::all();
+        return response()->json($zones);
+    }
+
     public function getzonesData()
     {
 

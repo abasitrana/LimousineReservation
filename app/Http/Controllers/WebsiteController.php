@@ -166,16 +166,22 @@ class WebsiteController extends Controller
     public function bookingSession(Request $request)
     {
         $data = $request->all();
+        if ($request->hourly_package_id == 'zonal') {
+            $data['hourly_package_id'] = 0;
+            $data['route_type'] = 1;
+        } else {
+            $data['route_type'] = 2;
+        }
         session(['bookingData' => $data]);
         return to_route('booking');
     }
 
     public function createBooking(Request $request)
     {
-        dd($request->car);
-        if (!$request->car) {
-            return redirect()->route('booking')->with(['error' => 'No car Selected']);
-        }
+
+        $request->validate([
+            'car' => 'required',
+        ]);
         try {
             $car = Car::where('id', $request->car)->where('max_capacity', $request->person_count)->where('max_luggage', $request->luggage_count)->first();
             if (!$car) {
@@ -264,5 +270,24 @@ class WebsiteController extends Controller
 
 
         return to_route('booking');
+    }
+
+
+
+
+    public function getZonalFareApi()
+    {
+        // get only zone from and to and fare price
+        $zones = Fare::with(['from', 'to'])->get();
+
+        $results = $zones->map(function ($zone) {
+            return [
+                'from' => $zone->from->postal,
+                'to' => $zone->to->postal,
+            ];
+        });
+
+
+        return response()->json($results);
     }
 }

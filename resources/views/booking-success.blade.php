@@ -44,7 +44,6 @@
     </header>
     <div>
         <div class="d-flex justify-content-center flex-column align-items-center" style="min-height: 60vh">
-            <h2>Booking Successful {{ $customer?->name }}!</h2>
             <h3>Your ride is booked!</h3>
             <p><a class="custom-submit-style px-4 mt-4" href="/">Go to Home</a></p>
         </div>

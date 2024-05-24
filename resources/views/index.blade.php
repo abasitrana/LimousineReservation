@@ -161,9 +161,10 @@
                                 <i class="fas fa-clock"></i>
                                 <select class="input-style" name="hourly_package_id" required="" id="hourly-price">
                                     {{-- <option selected disabled>Select Hourly Price</option> --}}
+                                    <option selected value="zonal">Round Trip</option>
                                     @foreach ($HourlyPackage as $key => $hpkg)
-                                        <option {{ $loop->iteration == 1 ? 'selected' : '' }}
-                                            value="{{ $hpkg->id }}" data-hourly-price="{{ $hpkg->hourly_rate }}">
+                                        <option value="{{ $hpkg->id }}"
+                                            data-hourly-price="{{ $hpkg->hourly_rate }}">
                                             {{ $hpkg->package_name }}
                                         </option>
                                     @endforeach
@@ -500,6 +501,7 @@
         </section>
     </div>
 
+    <input type="hidden" id="google_site_key" value={{ config('google_maps.GOOGLE_SITE_KEY') }}>
     <footer>
         <div class="container-fluid">
             <div class="row">
@@ -526,10 +528,31 @@
     <script src="{{ asset('assets/js/datetimepicker.full.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom.js') }}"></script>
 
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcUetAfoIiPRqSJ2eW5jp8VgqiMLTFPcc&callback=initMap&libraries=places"
-        defer></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const googleSiteKeyInput = document.getElementById("google_site_key");
+            if (googleSiteKeyInput) {
+                const googleSiteKey = googleSiteKeyInput.value;
+
+                (function(d, s, id) {
+                    var js, gjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleSiteKey +
+                        '&callback=initMap&libraries=places';
+                    js.onerror = function() {
+                        console.error('Google Maps API failed to load.');
+                    };
+                    gjs.parentNode.insertBefore(js, gjs);
+                }(document, 'script', 'google-maps-api'));
+            } else {
+                console.error('Google Site Key input field not found.');
+            }
+        });
+    </script>
     <script>
         $(document).ready(function() {
 

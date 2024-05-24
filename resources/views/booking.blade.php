@@ -46,7 +46,7 @@
     </header>
     <form action="{{ route('checkout') }}" method="POST">
         @csrf
-        <input type="hidden" id="routeType" name="route_type"
+        <input type="hidden" id="route_type" name="route_type"
             value="{{ session('bookingData')['route_type'] ?? '2' }}">
         <input type="hidden" id="carIdInput" name="car" required>
         <input type="hidden" id="carPriceInput" required>
@@ -56,7 +56,7 @@
         <input type="hidden" id="fareIdInput" name="fare_id" value="{{ session('bookingData')['fare_id'] ?? '' }}">
         <input type="hidden" id="totalPriceInput" name="total_price">
         <input type="hidden" id="hourly-price" name='hourly_package_id'
-            data-hourly-price="{{ $HourlyPackage->hourly_rate }}"
+            data-hourly-price="{{ $HourlyPackage->hourly_rate ?? '0' }}"
             value="{{ session('bookingData')['hourly_package_id'] ?? '' }}">
         <section class="form-styling spacing__x pb-0">
             <div class="container">
@@ -232,36 +232,43 @@
                         <div class="grid"
                             style="max-height:600px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));grid-template-rows: 250px; grid-auto-rows:250px;gap:8px">
                             @foreach ($cars as $key => $car)
-                                <div class="hc-slide-box w-100">
-                                    <div class="img-box" style="flex-grow: 1">
-                                        <img width="200"
-                                            src="{{ asset($car->car_pictures->first()?->car_picture_path) }}" />
+                                <div class="hc-slide-box w-100 car-selection">
+                                    <div class="d-flex justify-content-end">
+                                        <input type="radio" style="width:auto" class="select-car" name='car'
+                                            required value='{{ $car->id }}' data-car-id="{{ $car->id }}"
+                                            data-car-price="{{ $car->car_base_fare }}">
                                     </div>
-                                    <div class="text-box"
-                                        style="display: flex;min-width: 125px;height:200px;overflow-y: auto;flex-direction: column;justify-content: center; flex-grow:2">
-                                        <h3>{{ $car->car_name }}</h3>
-                                        <ul>
-                                            <li><i class="fas fa-user-friends"></i> <span>Max
-                                                    {{ $car->max_capacity }}</span></li>
-                                            <li><i class="fas fa-suitcase-rolling"></i> <span>Max
-                                                    {{ $car->max_luggage }}</span></li>
-                                        </ul>
-                                        <ul class="mt-1">
-                                            <li>
-                                                <i class='fas fa-user-friends'></i><span>Base Fare:
-                                                    {{ $car->car_base_fare }}</span>
-                                            </li>
-                                        </ul>
-                                        <ul class="mt-1">
-                                            <li>
-                                                <i class='fas fa-user-friends'><span> Extra Hourly Rate: </span><span
-                                                        class="extra-hourly-rate"></span></i>
-                                            </li>
-                                        </ul>
-                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm select-car mt-4"
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <div class="img-box" style="flex-grow: 1">
+                                            <img width="200"
+                                                src="{{ asset($car->car_pictures->first()?->car_picture_path) }}" />
+                                        </div>
+                                        <div class="text-box"
+                                            style="display: flex;min-width: 125px;height:200px;overflow-y: auto;flex-direction: column;justify-content: center; flex-grow:2">
+                                            <h3>{{ $car->car_name }}</h3>
+                                            <ul>
+                                                <li><i class="fas fa-user-friends"></i> <span>Max
+                                                        {{ $car->max_capacity }}</span></li>
+                                                <li><i class="fas fa-suitcase-rolling"></i> <span>Max
+                                                        {{ $car->max_luggage }}</span></li>
+                                            </ul>
+                                            <ul class="mt-1">
+                                                <li>
+                                                    <i class='fas fa-user-friends'></i><span>Base Fare:
+                                                        {{ $car->car_base_fare }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="mt-1"
+                                                style="{{ isset(session('bookingData')['route_type']) == 1 ? 'display:none;' : '' }}">
+                                                <li>
+                                                    <i class='fas fa-user-friends'><span> Extra Hourly Rate:
+                                                        </span><span class="extra-hourly-rate"></span></i>
+                                                </li>
+                                            </ul>
+                                            {{-- <a href="javascript:void(0);" class="btn btn-primary btn-sm select-car mt-4"
                                             data-car-id="{{ $car->id }}"
-                                            data-car-price="{{ $car->car_base_fare }}">Select Car</a>
-                                        {{-- <div style="display: block">
+                                            data-car-price="{{ $car->car_base_fare }}">Select Car</a> --}}
+                                            {{-- <div style="display: block">
                                             <input type="radio"
                                                 class="btn btn-primary form-check-input btn-sm select-car mt-4"
                                                 name='car' value='{{ $car->id }}'
@@ -269,6 +276,7 @@
                                                 data-car-price="{{ $car->car_base_fare }}">
                                             <label class="form-check-label" for="car">Select Car</label>
                                         </div> --}}
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -314,7 +322,7 @@
                             {{-- <span class="left-align">From</span> --}}
                             {{-- <input type="text" name="booking_date_from" value="{{ $bookingData ? $bookingData['pickup_address'] : '' }}" class="input-style" placeholder=""> --}}
 
-                            <input type="text" name="pickup_address" class="input-style"
+                            <input type="text" name="pickup_address" class="input-style" disabled
                                 style="padding:0px 25px 0px 50px" id="zone_from"
                                 value="{{ $bookingData && $bookingData['pickup_address'] ? $bookingData['pickup_address'] : '' }}"
                                 placeholder="Pickup Address" required>
@@ -325,7 +333,7 @@
                         <div class="c-form-group s2">
                             {{-- <span class="left-align">To</span> --}}
                             {{-- <input type="text" name="booking_date_to" value="{{ $bookingData ? $bookingData['dropoff'] : '' }}" class="input-style" placeholder=""> --}}
-                            <input type="text" name="dropoff"
+                            <input type="text" name="dropoff" disabled
                                 value="{{ $bookingData && $bookingData['dropoff'] ? $bookingData['dropoff'] : '' }}"
                                 class="input-style"style="padding:0px 25px 0px 50px" placeholder="Dropoff Address"
                                 id="zone_to" required>
@@ -683,9 +691,19 @@
                 updateTotalPrice();
             });
 
+            const carSelectionElements = document.querySelectorAll('.car-selection');
+
+            carSelectionElements.forEach(carSelection => {
+                carSelection.addEventListener('click', () => {
+                    const radio = carSelection.querySelector('input[type="radio"]');
+                    radio.click()
+                });
+            });
+
+
 
             $('.select-car').click(function(event) {
-                event.preventDefault();
+                // event.preventDefault();
                 var carId = $(this).data('car-id');
                 $('#carIdInput').val(carId);
                 var carPrice = parseInt($(this).data('car-price') || 0);
@@ -709,10 +727,13 @@
                 $("#hourlySlapPriceInput").val(extraHourlyPrice)
                 var fromToPrice = 0;
                 let route_type = $('#route_type').val();
-
+                console.log(route_type)
                 if (route_type == 1) {
-                    fromToPrice = parseInt($("#fromToPrice").val() || 0);
+                    console.log($("#fromToPrice"))
+                    fromToPrice = parseInt($("#fromToPrice").val());
                 }
+                console.log("Car Price: " + carPrice, "Hourly Price: " + hourlyPrice, "Hours Count: " + hoursCount,
+                    "From To price: " + fromToPrice)
                 var totalPrice = carPrice + hourlyPrice + fromToPrice + extraHourlyPrice;
                 $('#totalPriceInput').val(totalPrice);
                 $('.total-price').text('$' + totalPrice);

@@ -166,7 +166,7 @@ class BookingController extends Controller
                 if ($request->route_type == 1) {
                     $fareId = $request->input('fare_id') ?? 1;
                     $zonalFare = Fare::where('id', $fareId)->first();
-                    $total_price += $zonalFare->fare + $car->car_base_fare + $hourlyPackage->hourly_rate;
+                    $total_price += $zonalFare->fare + $car->car_base_fare + $hourlyPackage?->hourly_rate ?? 0;
 
 
                     $booking = new Booking();
@@ -337,5 +337,72 @@ class BookingController extends Controller
                 echo 'Received unknown event type ' . $event->type;
         }
         return response();
+    }
+
+    public function editBooking($id)
+    {
+        $booking = Booking::find($id);
+        $cars = Car::get();
+        $hourly_package = HourlyPackage::get();
+        return view('admin.bookings.editbooking', compact('booking', 'cars', 'hourly_package'));
+    }
+    public function updateBooking(Request $request, $id)
+    {
+        $request->validate([
+            'car_id' => 'required',
+            'hourly_package_id' => 'required',
+            'datepicker' => 'required',
+            'timepicker' => 'required',
+            'start_address' => 'required',
+            'end_address' => 'required',
+            'start_address_zipcode' => 'nullable',
+            'end_address_zipcode' => 'nullable',
+            'start_address_lat' => 'nullable',
+            'start_address_lng' => 'nullable',
+            'end_address_lat' => 'nullable',
+            'end_address_lng' => 'nullable',
+            'route_type' => 'required',
+            'total_price' => 'required',
+            'luggage_count' => 'required',
+            'person_count' => 'required',
+            'session_id' => 'nullable',
+            'status' => 'required',
+            'user_id' => 'nullable',
+        ]);
+        if ($request->route_type == 1) {
+            $fare = Fare::where('zone_from', $request->start_address)->where('zone_to', $request->end_address)->first();
+            if (!$fare) {
+                return redirect()->back()->with(['error' => 'Please select valid start and end address for Round Trip']);
+            }
+        }
+        $booking = Booking::where('id', $id)->first();
+        $booking->car_id = $request->car_id;
+        $booking->hourly_package_id = $request->hourly_package_id;
+        $booking->datepicker = $request->datepicker;
+        $booking->timepicker = $request->timepicker;
+        $booking->start_address = $request->start_address;
+        $booking->end_address = $request->end_address;
+        $booking->start_address_zipcode = $request->start_address_zipcode ?? 12345;
+        $booking->end_address_zipcode = $request->end_address_zipcode ?? 12345;
+        $booking->start_address_lat = $request->start_address_lat ?? 12345;
+        $booking->start_address_lng = $request->start_address_lng ?? 12345;
+        $booking->end_address_lat = $request->end_address_lat ?? 12345;
+        $booking->end_address_lng = $request->end_address_lng ?? 12345;
+        $booking->route_type = $request->route_type;
+        $booking->total_price = $request->total_price;
+        $booking->luggage_count = $request->luggage_count;
+        $booking->person_count = $request->person_count;
+        $booking->session_id = $request->session_id ?? 'test';
+        $booking->status = $request->status;
+        $booking->user_id = $request->user_id;
+        $booking->save();
+        return redirect()->route('admin.bookings')->with(['success' => 'Booking Updated Successfully']);
+    }
+
+    public function deleteBooking($id)
+    {
+        $booking = Booking::find($id);
+        $booking->delete();
+        return redirect()->route('admin.bookings')->with('message', 'Booking Deleted Successfully');
     }
 }

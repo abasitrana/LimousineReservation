@@ -34,7 +34,7 @@ Route::post('bookings', 'App\Http\Controllers\BookingController@checkout')->name
 
 Route::get('test', 'App\Http\Controllers\WebsiteController@test');
 
-Route::get('google-maps-test', function () {
+Route::get('google-maps', function () {
     return view('google-maps-example');
 });
 
@@ -54,6 +54,8 @@ Route::post('signup', 'App\Http\Controllers\AuthController@register');
 Route::post('get-fare', 'App\Http\Controllers\WebsiteController@getFarePrice')->name('get-fare');
 
 Route::post('get-slaps-price', 'App\Http\Controllers\WebsiteController@getSlapsPrice')->name('get-slaps-price');
+
+Route::get('get-zonal-fare', 'App\Http\Controllers\WebsiteController@getZonalFareApi')->name('get-zonal-fare');
 
 
 Route::prefix('admin')->middleware(['admin'])->group(function () {
@@ -105,6 +107,9 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::get('bookings', 'App\Http\Controllers\BookingController@booking')->name('admin.bookings');
     Route::get('addbookings', 'App\Http\Controllers\BookingController@addbooking');
     Route::post('addbookings', 'App\Http\Controllers\BookingController@addbookingdata')->name('admin.submit.booking');
+    Route::get('delete/booking/{id}', 'App\Http\Controllers\BookingController@deleteBooking')->name('admin.delete.booking');
+    Route::get('edit-booking/{id}', 'App\Http\Controllers\BookingController@editBooking')->name('admin.edit.booking');
+    Route::post('update-booking/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('admin.update.booking');
 
 
     //Zonal Management

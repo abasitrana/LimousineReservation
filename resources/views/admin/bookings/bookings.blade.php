@@ -74,6 +74,8 @@
                                                         <th>Luggage Count</th>
                                                         <th>Person Count</th>
                                                         <th>Total Count</th>
+                                                        <th>Payment Status</th>
+                                                        <th>Created At</th>
                                                         <th>Actions</th>
                                                     </tr>
                                                 </thead>
@@ -129,6 +131,27 @@
                 data: 'total_price'
             },
             {
+                data: 'status'
+            },
+            {
+                data: 'created_at',
+                render: function(data, type, row) {
+                    // Create a new Date object from the ISO 8601 string
+                    const bookingDate = new Date(data);
+
+                    const options = {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    };
+                    const formattedDate = bookingDate.toLocaleDateString('en-US',
+                        options);
+
+                    return formattedDate;
+                }
+
+            },
+            {
                 data: null,
                 render: function(data, type, row) {
                     return '<button class="btn btn-primary" onclick="editFunction(' + data.id +
@@ -136,8 +159,12 @@
                         ' <button class="btn btn-danger" onclick="deleteFunction(' + data.id +
                         ')">Delete</button>';
                 }
-            }
-        ]
+            },
+
+        ],
+        order: [
+            [9, "desc"]
+        ],
     });
 
     function editFunction(id) {
@@ -147,6 +174,6 @@
 
     function deleteFunction(id) {
         // Implement your delete logic here
-        window.location.href = 'admin/delete/fleet/' + id;
+        window.location.href = 'delete/bookings/' + id;
     }
 </script>
