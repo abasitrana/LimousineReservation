@@ -230,21 +230,21 @@
                     <div class="col-lg-12">
                         {{-- <div class="center-mode-slider"> --}}
                         <div class="grid"
-                            style="max-height:600px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));grid-template-rows: 250px; grid-auto-rows:250px;gap:8px">
+                            style="max-height:600px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));grid-template-rows: 200px; grid-auto-rows:200px;gap:8px">
                             @foreach ($cars as $key => $car)
                                 <div class="hc-slide-box w-100 car-selection">
-                                    <div class="d-flex justify-content-end">
+                                    <div class="d-flex justify-content-end" style="position: absolute; right:10px;">
                                         <input type="radio" style="width:auto" class="select-car" name='car'
                                             required value='{{ $car->id }}' data-car-id="{{ $car->id }}"
                                             data-car-price="{{ $car->car_base_fare }}">
                                     </div>
-                                    <div class="d-flex justify-content-center align-items-center">
+                                    <div class="d-flex justify-content-center align-items-center" style="gap:10px">
                                         <div class="img-box" style="flex-grow: 1">
                                             <img width="200"
                                                 src="{{ asset($car->car_pictures->first()?->car_picture_path) }}" />
                                         </div>
                                         <div class="text-box"
-                                            style="display: flex;min-width: 125px;height:200px;overflow-y: auto;flex-direction: column;justify-content: center; flex-grow:2">
+                                            style="display: flex;min-width: 125px;height:150px;overflow-y: auto;flex-direction: column;justify-content: center; flex-grow:2">
                                             <h3>{{ $car->car_name }}</h3>
                                             <ul>
                                                 <li><i class="fas fa-user-friends"></i> <span>Max
