@@ -335,18 +335,19 @@
                                 </button>
                             </div>
                             <div id="stops-container">
-                                @foreach ($bookingData['stops'] as $stop)
-                                    <div class="c-form-group d-flex stop-input" style="margin-top: 10px;">
-                                        <input type="text" name="stops[]" class="input-style"
-                                            value="{{ $stop }}" style="padding:0px 25px 0px 50px; flex:1"
-                                            placeholder="Stop ${stopIndex} Address" required>
-                                        <button type="button" class="remove-stop-btn position-relative input-style"
-                                            style="margin-left: 10px; width:150px;">
-                                            <i class="fas fa-minus"></i> Remove
-                                        </button>
-                                    </div>
-                                @endforeach
-
+                                @if(isset($bookingData['stops']))
+                                    @foreach ($bookingData['stops'] as $stop)
+                                        <div class="c-form-group d-flex stop-input" style="margin-top: 10px;">
+                                            <input type="text" name="stops[]" class="input-style"
+                                                value="{{ $stop }}" style="padding:0px 25px 0px 50px; flex:1"
+                                                placeholder="Stop ${stopIndex} Address" required>
+                                            <button type="button" class="remove-stop-btn position-relative input-style"
+                                                style="margin-left: 10px; width:150px;">
+                                                <i class="fas fa-minus"></i> Remove
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
 
