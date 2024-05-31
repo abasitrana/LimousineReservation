@@ -186,7 +186,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-4"
-                                style=" {{ isset(session('bookingData')['route_type']) == 1 ? 'display:none;' : '' }}">
+                                style=" {{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
 
 
                                 <div class="input-group counter">
@@ -470,9 +470,34 @@
                 </div>
                  --}}
                 <div class="row justify-content-center">
+                    <div class="col-lg-8 ">
+                            <div class="pb-1 final-pricing bg-color-2">
+                            <h5 class="text-white">Car Price: <span class="total-car-price text-white">$0.00 <i class="far fa-info-circle"></i></span></h5>
+                            </div>
+                    </div>
+                    <!-- <div class="col-lg-8 hourly-price-prop" style="{{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
+                            <div class="py-1 final-pricing bg-color-2">
+                            <h5 class="text-white">Hourly Price: <span class="total-hourly-price text-white">$0.00 <i class="far fa-info-circle"></i></span></h5>
+                            </div>
+                    </div> -->
+                    <div class="col-lg-8 extra-hourly-price-prop" style="{{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
+                            <div class="py-1 final-pricing bg-color-2">
+                            <h5 class="text-white">Total Extra Hourly Price: <span class="total-extra-hourly-price text-white">$0.00 <i class="far fa-info-circle"></i></span></h5>
+                            </div>
+                    </div>
+                    <div class="col-lg-8 package-price-prop" style="{{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? 'display:none;' : '' }}">
+                            <div class="py-1 final-pricing bg-color-2">
+                            <h5 class="text-white">Package Price: <span class="total-package-price text-white">$0.00 <i class="far fa-info-circle"></i></span></h5>
+                            </div>
+                    </div>
+                    <div class="col-lg-8 route-price-prop" style="{{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? '' : 'display:none;' }}">
+                            <div class="py-1 final-pricing bg-color-2">
+                            <h5 class="text-white">Route Price: <span class="total-route-price text-white">$0.00 <i class="far fa-info-circle"></i></span></h5>
+                            </div>
+                    </div>
                     <div class="col-lg-8">
-                        <div class="final-pricing bg-color-2">
-                            <h3 class="total-price">$0.00 <i class="far fa-info-circle"></i></h3>
+                        <div class="pt-3 final-pricing bg-color-2">
+                            <h3 class="text-white">Total: <span class="total-price">$0.00 <i class="far fa-info-circle"></i></span></h3>
                         </div>
                         <div class="final-pricing-btn position-absolute">
                             <div class="c-form-group">
@@ -802,6 +827,11 @@
                     "From To price: " + fromToPrice)
                 var totalPrice = carPrice + hourlyPrice + fromToPrice + extraHourlyPrice;
                 $('#totalPriceInput').val(totalPrice);
+                $('.total-package-price').text('$' + hourlyPrice);
+                // $('.total-hourly-price').text('$' + hourlyPrice);
+                $('.total-route-price').text('$' + fromToPrice);
+                $('.total-car-price').text('$' + carPrice);
+                $('.total-extra-hourly-price').text('$' + extraHourlyPrice);
                 $('.total-price').text('$' + totalPrice);
             }
 
