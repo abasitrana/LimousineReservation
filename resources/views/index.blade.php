@@ -119,6 +119,7 @@
                             <div class="c-form-group">
                                 <i class="fas fa-user-friends"></i>
                                 <select class="input-style" required name="max_persons">
+                                    <option selected value="0">0</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -132,6 +133,7 @@
                             <div class="c-form-group">
                                 <i class="fas fa-suitcase-rolling"></i>
                                 <select class="input-style" required name="max_luggage">
+                                    <option selected value="0">0</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -145,22 +147,11 @@
 
 
                     <div class="row">
-                        {{-- <div class="col-lg-12">
-                            <div class="c-form-group s2">
-
-                                <select name="route_type" class="input-style" id="route_type">
-                                    <option value="1" selected>Round Trip</option>
-                                    <option value="2">Location</option>
-                                </select>
-                                <span class="right-align">Route Type</span>
-
-                            </div>
-                        </div> --}}
                         <div class="col-lg-12">
                             <div class="c-form-group s2">
                                 <i class="fas fa-clock"></i>
                                 <select class="input-style" name="hourly_package_id" required="" id="hourly-price">
-                                    {{-- <option selected disabled>Select Hourly Price</option> --}}
+
                                     <option selected value="zonal">Round Trip</option>
                                     @foreach ($HourlyPackage as $key => $hpkg)
                                         <option value="{{ $hpkg->id }}"
@@ -175,54 +166,31 @@
                         </div>
                         <div class="col-lg-12">
                             <div class="c-form-group s2">
-                                {{-- <span class="left-align">To</span> --}}
-                                {{-- <input class="dropoff_airport" name="dropoff" type="text" class="input-style" placeholder="Select Airport" /> --}}
 
-                                {{-- <select name="pickup_address" class="input-style" id="zone_from"
-                                    required="required">
-
-                                    <option value="" disabled selected>Select Pickup Address</option>
-
-
-                                    @foreach ($zones as $key => $zone)
-                                        <option value="{{ $zone->id }}"
-                                            {{ $bookingData && $bookingData['pickup_address'] == $zone->id ? 'selected' : '' }}>
-                                            {{ $zone->zone }}
-                                        </option>
-                                    @endforeach
-
-
-                                </select> --}}
                                 <input type="text" name="pickup_address" class="input-style"
                                     style="padding:0px 25px 0px 50px" id="zone_from" placeholder="Pickup Address"
                                     required>
                                 <span class="right-align">From</span>
                             </div>
+                            <div class="col-lg-12 stops-input-section" style="display: none;">
+                                <div class="c-form-group">
+                                    <button type="button" class="input-style border-0 w-auto"
+                                        style="background:var(--primary-color)" id="add-stop-btn">
+                                        <i class="fas fa-plus" style="color:black; font-size:10px"></i> Add Stop
+                                    </button>
+                                </div>
+                                <div id="stops-container">
+                                    <!-- Stops input fields will be appended here -->
+                                </div>
+                            </div>
                             <div class="c-form-group s2">
-                                {{-- <span class="left-align">To</span> --}}
-                                {{-- <input class="dropoff_airport" name="dropoff" type="text" class="input-style" placeholder="Select Airport" /> --}}
-
-                                {{-- <select name="dropoff" class="input-style" id="zone_to" required="required">
-
-                                    <option value="" disabled selected>Select Drop-off</option>
-
-
-                                    @foreach ($zones as $key => $zone)
-                                        <option value="{{ $zone->id }}"
-                                            {{ $bookingData && $bookingData['dropoff'] == $zone->id ? 'selected' : '' }}>
-                                            {{ $zone->zone }}
-                                        </option>
-                                    @endforeach
-
-
-
-                                </select> --}}
                                 <input type="text" name="dropoff"
                                     class="input-style"style="padding:0px 25px 0px 50px" placeholder="Dropoff Address"
                                     id="zone_to" required>
                                 <span class="right-align">To</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div class="col-lg-2">
@@ -555,7 +523,40 @@
     </script>
     <script>
         $(document).ready(function() {
+            function toggleStopsInput() {
+                var selectedPackage = $('#hourly-price').val();
+                if (selectedPackage !== 'zonal') {
+                    $('.stops-input-section').show();
+                } else {
+                    $('.stops-input-section').hide();
+                    $('#stops-container').empty(); // Clear stops when switching back to zonal
+                }
+            }
 
+            // Event listener for hourly package selection change
+            $('#hourly-price').change(toggleStopsInput);
+
+            // Initial check on page load
+            toggleStopsInput();
+
+            // Event listener for adding a new stop
+            $('#add-stop-btn').click(function() {
+                var stopIndex = $('#stops-container .stop-input').length + 1;
+                var stopHtml = `
+                <div class="c-form-group d-flex stop-input" style="margin-top: 10px;">
+                    <input type="text" name="stops[]" class="input-style"
+                           style="padding:0px 25px 0px 50px; flex:1" placeholder="Stop ${stopIndex} Address" required>
+                    <button type="button" class="remove-stop-btn position-relative input-style" style="margin-left: 10px; width:150px;">
+                        <i class="fas fa-minus"></i> Remove
+                    </button>
+                </div>`;
+                $('#stops-container').append(stopHtml);
+            });
+
+            // Event listener for removing a stop
+            $(document).on('click', '.remove-stop-btn', function() {
+                $(this).closest('.stop-input').remove();
+            });
             $('#zone_from, #zone_to').change(function() {
                 var routeType = parseInt($('#route_type').find(':selected').val())
                 if (routeType == 2) {

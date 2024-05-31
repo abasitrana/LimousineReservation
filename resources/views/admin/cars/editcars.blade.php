@@ -99,7 +99,7 @@
                                                 <div class="form-group">
                                                     <label>Car Picture</label>
                                                     <input type="file" name="files[]" multiple class="form-control"
-                                                        accept="image/png, image/gif, image/jpeg" required>
+                                                        accept="image/png, image/gif, image/jpeg">
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">Submit</button>
                                             </form>

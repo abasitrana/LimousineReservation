@@ -169,11 +169,11 @@
 
     function editFunction(id) {
         // Implement your edit logic here
-        window.location.href = 'editcars/' + id;
+        window.location.href = 'edit-booking/' + id;
     }
 
     function deleteFunction(id) {
         // Implement your delete logic here
-        window.location.href = 'delete/bookings/' + id;
+        window.location.href = 'delete/booking/' + id;
     }
 </script>

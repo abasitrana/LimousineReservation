@@ -77,7 +77,7 @@
                     <div class="col-lg-12">
                         <div class="row">
                             <div class="col-lg-12"
-                                style=" {{ isset(session('bookingData')['route_type']) == 1 ? '' : 'display:none;' }}">
+                                style=" {{ isset(session('bookingData')['route_type']) && session('bookingData')['route_type'] == 1 ? '' : 'display:none;' }}">
 
                                 <div class="alert alert-warning">
                                     For round trip routes, a fixed duration of 7 hours applies.
@@ -129,7 +129,10 @@
                             <div class="col-lg-4">
                                 <div class="c-form-group">
                                     <i class="fas fa-user-friends"></i>
-                                    <select class="input-style" name="person_count" required="">
+                                    <select class="input-style" id="person_count" name="person_count" required="">
+                                        <option value="0"
+                                            {{ $bookingData && $bookingData['max_persons'] == 0 ? 'selected' : '' }}>0
+                                        </option>
                                         <option value="1"
                                             {{ $bookingData && $bookingData['max_persons'] == 1 ? 'selected' : '' }}>1
                                         </option>
@@ -155,7 +158,12 @@
                             <div class="col-lg-4">
                                 <div class="c-form-group">
                                     <i class="fas fa-suitcase-rolling"></i>
-                                    <select class="input-style" name="luggage_count" required="">
+
+                                    <select class="input-style" id="luggage_count" name="luggage_count"
+                                        required="">
+                                        <option value="0"
+                                            {{ $bookingData && $bookingData['max_luggage'] == 0 ? 'selected' : '' }}>0
+                                        </option>
                                         <option value="1"
                                             {{ $bookingData && $bookingData['max_luggage'] == 1 ? 'selected' : '' }}>1
                                         </option>
@@ -232,7 +240,9 @@
                         <div class="grid"
                             style="max-height:600px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));grid-template-rows: 200px; grid-auto-rows:200px;gap:8px">
                             @foreach ($cars as $key => $car)
-                                <div class="hc-slide-box w-100 car-selection">
+                                <div class="hc-slide-box w-100 car-selection"
+                                    data-max-persons="{{ $car->max_capacity }}"
+                                    data-max-luggage="{{ $car->max_luggage }}">
                                     <div class="d-flex justify-content-end" style="position: absolute; right:10px;">
                                         <input type="radio" style="width:auto" class="select-car" name='car'
                                             required value='{{ $car->id }}' data-car-id="{{ $car->id }}"
@@ -254,8 +264,8 @@
                                             </ul>
                                             <ul class="mt-1">
                                                 <li>
-                                                    <i class='fas fa-user-friends'></i><span>Base Fare:
-                                                        {{ $car->car_base_fare }}</span>
+                                                    <i class='fas fa-user-friends'></i><span>Total Price:
+                                                        {{ $car->car_base_fare + (session('bookingData')['route_type'] == 1 ? session('bookingData')['total_fare'] ?? 0 : $HourlyPackage->hourly_rate) }}</span>
                                                 </li>
                                             </ul>
                                             <ul class="mt-1"
@@ -265,17 +275,6 @@
                                                         </span><span class="extra-hourly-rate"></span></i>
                                                 </li>
                                             </ul>
-                                            {{-- <a href="javascript:void(0);" class="btn btn-primary btn-sm select-car mt-4"
-                                            data-car-id="{{ $car->id }}"
-                                            data-car-price="{{ $car->car_base_fare }}">Select Car</a> --}}
-                                            {{-- <div style="display: block">
-                                            <input type="radio"
-                                                class="btn btn-primary form-check-input btn-sm select-car mt-4"
-                                                name='car' value='{{ $car->id }}'
-                                                data-car-id="{{ $car->id }}"
-                                                data-car-price="{{ $car->car_base_fare }}">
-                                            <label class="form-check-label" for="car">Select Car</label>
-                                        </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -322,18 +321,39 @@
                             {{-- <span class="left-align">From</span> --}}
                             {{-- <input type="text" name="booking_date_from" value="{{ $bookingData ? $bookingData['pickup_address'] : '' }}" class="input-style" placeholder=""> --}}
 
-                            <input type="text" name="pickup_address" class="input-style" disabled
+                            <input type="text" name="pickup_address" class="input-style"
                                 style="padding:0px 25px 0px 50px" id="zone_from"
                                 value="{{ $bookingData && $bookingData['pickup_address'] ? $bookingData['pickup_address'] : '' }}"
                                 placeholder="Pickup Address" required>
                             <span class="right-align">From</span>
 
                         </div>
+                        <div class="col-lg-12 stops-input-section" style="display: none;">
+                            <div class="c-form-group">
+                                <button type="button" class="input-style border-0 w-auto" id="add-stop-btn">
+                                    <i class="fas fa-plus" style="color:black; font-size:10px"></i> Add Stop
+                                </button>
+                            </div>
+                            <div id="stops-container">
+                                @foreach ($bookingData['stops'] as $stop)
+                                    <div class="c-form-group d-flex stop-input" style="margin-top: 10px;">
+                                        <input type="text" name="stops[]" class="input-style"
+                                            value="{{ $stop }}" style="padding:0px 25px 0px 50px; flex:1"
+                                            placeholder="Stop ${stopIndex} Address" required>
+                                        <button type="button" class="remove-stop-btn position-relative input-style"
+                                            style="margin-left: 10px; width:150px;">
+                                            <i class="fas fa-minus"></i> Remove
+                                        </button>
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        </div>
 
                         <div class="c-form-group s2">
                             {{-- <span class="left-align">To</span> --}}
                             {{-- <input type="text" name="booking_date_to" value="{{ $bookingData ? $bookingData['dropoff'] : '' }}" class="input-style" placeholder=""> --}}
-                            <input type="text" name="dropoff" disabled
+                            <input type="text" name="dropoff"
                                 value="{{ $bookingData && $bookingData['dropoff'] ? $bookingData['dropoff'] : '' }}"
                                 class="input-style"style="padding:0px 25px 0px 50px" placeholder="Dropoff Address"
                                 id="zone_to" required>
@@ -493,8 +513,6 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.5.1/slick/slick.min.js"></script>
 
-
-
     <script src="{{ asset('assets/js/custom.js') }}"></script>
 
 
@@ -537,6 +555,53 @@
                     }
                 ]
             });
+
+            var selectedPackage = $('#route_type').val();
+            if (selectedPackage !== '1') {
+                $('.stops-input-section').show();
+            } else {
+                $('.stops-input-section').hide();
+                $('#stops-container').empty(); // Clear stops when switching back to zonal
+            }
+            $('#add-stop-btn').click(function() {
+                var stopIndex = $('#stops-container .stop-input').length + 1;
+                var stopHtml = `
+                <div class="c-form-group d-flex stop-input" style="margin-top: 10px;">
+                    <input type="text" name="stops[]" class="input-style"
+                           style="padding:0px 25px 0px 50px; flex:1" placeholder="Stop ${stopIndex} Address" required>
+                    <button type="button" class="remove-stop-btn position-relative input-style" style="margin-left: 10px; width:150px;">
+                        <i class="fas fa-minus"></i> Remove
+                    </button>
+                </div>`;
+                $('#stops-container').append(stopHtml);
+            });
+
+            // Event listener for removing a stop
+            $(document).on('click', '.remove-stop-btn', function() {
+                $(this).closest('.stop-input').remove();
+            });
+
+            function filterCars() {
+                var maxPersons = parseInt($('#person_count').val());
+                var maxLuggage = parseInt($('#luggage_count').val());
+
+                $('.car-selection').each(function() {
+                    var carMaxPersons = parseInt($(this).data('max-persons'));
+                    var carMaxLuggage = parseInt($(this).data('max-luggage'));
+                    console.log("carMaxPersons: " + carMaxPersons, "carMaxLuggage: " + carMaxLuggage)
+                    if (carMaxPersons >= maxPersons && carMaxLuggage >= maxLuggage) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                        $(this).find('.select-car').prop('checked', false);
+                    }
+                });
+            }
+
+            $('#person_count, #luggage_count').change(filterCars);
+
+            // Initial filter on page load
+            filterCars();
 
 
             var hourlyPackagePriceData = {};

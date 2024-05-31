@@ -65,7 +65,7 @@ class FareController extends Controller
                     $fail('The Car Name, Zone From, and Zone To already exists.');
                 }
             }],
-            'fare' => ['required', 'integer'],
+            'fare' => ['required', 'numeric'],
         ]);
 
         if ($validator->fails()) {
@@ -113,7 +113,7 @@ class FareController extends Controller
             'zone_from' => ['required'],
             'zone_to' =>  ['required'],
             'car_name' => ['required'],
-            'fare' => ['required', 'integer'],
+            'fare' => ['required', 'numeric'],
         ]);
 
         Fare::where('id', $id)->update([

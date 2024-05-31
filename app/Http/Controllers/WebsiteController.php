@@ -129,7 +129,7 @@ class WebsiteController extends Controller
         $bookingData = session('bookingData');
 
         // dd($bookingData);
-        $cars = Car::where('max_capacity', '>=', $bookingData['max_persons'])->where('max_luggage', '>=', $bookingData['max_luggage'])->get();
+        $cars = Car::get();
         $HourlyPackage = HourlyPackage::where('id', $bookingData['hourly_package_id'])->first();
 
         // dd($HourlyPackage);
